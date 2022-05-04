@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-// import { Bar } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import {
   IonButton,
   IonCard,
@@ -15,7 +15,7 @@ import {
   IonRow,
   IonText,
   IonToolbar,
-  // IonicSwiper,
+  IonicSwiper,
   IonHeader,
   useIonPopover,
   IonButtons,
@@ -35,8 +35,8 @@ import {
 } from "ionicons/icons";
 import ReactHtmlParser from "react-html-parser";
 import { fetchPOIMedia, fetchTourDetails } from "../components/Functions";
-// import { Swiper, SwiperSlide } from "swiper/react";
-// import SwiperCore, { Navigation, Pagination } from "swiper";
+import { Swiper, SwiperSlide } from "swiper/react";
+import SwiperCore, { Navigation, Pagination } from "swiper";
 import { TextToSpeech } from "@capacitor-community/text-to-speech";
 import ReactPlayer from "react-player/file";
 import "swiper/swiper-bundle.min.css";
@@ -72,114 +72,116 @@ function POIModal(props: {
     ? props.data.tours_id.split(",").length
     : 0;
 
-  // const [graphView, setGraphView] = useState<boolean>(false); // Mostra o nascondi il grafico della popolazione nel POI
-  // const [swiperInstance, setSwiperInstance] = useState<SwiperCore>(); //
-  // SwiperCore.use([IonicSwiper, Navigation, Pagination]);
+  const [graphView, setGraphView] = useState<boolean>(false); // Mostra o nascondi il grafico della popolazione nel POI
+  const [swiperInstance, setSwiperInstance] = useState<SwiperCore>(); //
+  SwiperCore.use([IonicSwiper, Navigation, Pagination]);
 
-  // // DATI DI PROVA
+  // DATI DI PROVA
 
-  // const data1 = {
-  //   labels: [
-  //     "6-8",
-  //     "8-10",
-  //     "10-12",
-  //     /*t("day_week_mon"),
-  //     t("day_week_tue"),
-  //     t("day_week_tue"),
-  //     t("day_week_thu"),
-  //     t("day_week_fri"),
-  //     t("day_week_sat"),
-  //     t("day_week_sun"),
-  //     */
-  //   ],
-  //   datasets: [
-  //     {
-  //       label: "historical",
-  //       data: [12, 19, 25],
-  //       backgroundColor: "rgb(255, 99, 132)",
-  //     },
-  //     {
-  //       label: "expected",
-  //       data: [3, 10, 2],
-  //       backgroundColor: "rgb(75, 192, 192)",
-  //     },
-  //     {
-  //       label: "real",
-  //       data: [0, 3, 0],
-  //       backgroundColor: "rgb(54, 162, 235)",
-  //     },
-  //   ],
-  // };
+  const data1 = {
+    labels: [
+      "Morning",
+      "Noon",
+      "Afternoon",
+      /*t("day_week_mon"),
+       t("day_week_tue"),
+       t("day_week_tue"),
+       t("day_week_thu"),
+       t("day_week_fri"),
+       t("day_week_sat"),
+       t("day_week_sun"),
+       */
+    ],
+    datasets: [
+      {
+        label: "historical",
+        data: [89, 35, 65],
+        backgroundColor: "rgb(255, 99, 132)",
+      },
+      {
+        label: "expected",
+        data: [80, 20, 60],
+        backgroundColor: "rgb(75, 192, 192)",
+      },
+      {
+        label: "real",
+        data: [85, 0, 0],
+        backgroundColor: "rgb(54, 162, 235)",
+      },
+    ],
+  };
 
-  // const data2 = {
-  //   labels: ["12-14", "14-16", "16-18"],
-  //   datasets: [
-  //     {
-  //       label: t("historical"),
-  //       data: [3, 5, 13],
-  //       backgroundColor: "rgb(255, 99, 132)",
-  //     },
-  //     {
-  //       label: t("expected"),
-  //       data: [13, 15, 15],
-  //       backgroundColor: "rgb(75, 192, 192)",
-  //     },
-  //   ],
-  // };
+  const data2 = {
+    labels: ["12-14", "14-16", "16-18"],
+    datasets: [
+      {
+        label: props.i18n.t("historical"),
+        data: [3, 5, 13],
+        backgroundColor: "rgb(255, 99, 132)",
+      },
+      {
+        label: props.i18n.t("expected"),
+        data: [13, 15, 15],
+        backgroundColor: "rgb(75, 192, 192)",
+      },
+    ],
+  };
 
-  // const data3 = {
-  //   labels: ["18-20", "20-22", "22-24"],
-  //   datasets: [
-  //     {
-  //       label: t("historical"),
-  //       data: [2, 3, 18],
-  //       backgroundColor: "rgb(255, 99, 132)",
-  //     },
-  //     {
-  //       label: t("expected"),
-  //       data: [12, 13, 25],
-  //       backgroundColor: "rgb(75, 192, 192)",
-  //     },
-  //   ],
-  // };
+  const data3 = {
+    labels: ["18-20", "20-22", "22-24"],
+    datasets: [
+      {
+        label: props.i18n.t("historical"),
+        data: [2, 3, 18],
+        backgroundColor: "rgb(255, 99, 132)",
+      },
+      {
+        label: props.i18n.t("expected"),
+        data: [12, 13, 25],
+        backgroundColor: "rgb(75, 192, 192)",
+      },
+    ],
+  };
 
-  // function BarChart(props: { data: any }) {
-  //   return (
-  //     <Bar
-  //       data={props.data}
-  //       class="bar-chart"
-  //       options={{
-  //         animation: false,
-  //         responsive: true,
-  //         scales: {
-  //           x: {
-  //             offset: true,
-  //             display: true,
-  //             title: {
-  //               display: true,
-  //               text: t("xlabel"),
-  //               font: {
-  //                 weight: "bold",
-  //                 size: 14,
-  //               },
-  //             },
-  //           },
-  //           y: {
-  //             display: true,
-  //             title: {
-  //               display: true,
-  //               text: t("ylabel"),
-  //               font: {
-  //                 weight: "bold",
-  //                 size: 14,
-  //               },
-  //             },
-  //           },
-  //         },
-  //       }}
-  //     />
-  //   );
-  // }
+  function BarChart(props: { data: any, i18n: i18n; }) {
+    return (
+      <Bar
+        data={props.data}
+        //class="bar-chart"
+        options={{
+          animation: false,
+          responsive: true,
+          scales: {
+            x: {
+              offset: true,
+              display: true,
+              title: {
+                display: true,
+                text: props.i18n.t("xlabel"),
+                font: {
+                  weight: "bold",
+                  size: 14,
+                },
+              },
+            },
+            y: {
+              display: true,
+              title: {
+                display: true,
+                text: "# People",
+                font: {
+                  weight: "bold",
+                  size: 14,
+                },
+              },
+              max: 100,
+              min: 0,
+            },
+          },
+        }}
+      />
+    );
+  }
 
   /**
    * Funzione che manda in riproduzione vocale la descrizione del punto di interesse
@@ -458,72 +460,33 @@ function POIModal(props: {
           )}
 
           {/* SCHEDA OCCUPAZIONE */}
-          {
-            // <IonRow>
-            //   <IonCol>
-            //     <IonCard>
-            //       <IonItem
-            //         color="primary" //TITOLO MENU COLORATO
-            //         lines={graphView ? "inset" : "none"}
-            //         onClick={() => setGraphView(!graphView)}
-            //       >
-            //         <IonLabel>{t("chart")}:</IonLabel>
-            //         <IonIcon
-            //           slot="end"
-            //           icon={graphView ? removeCircle : addCircle}
-            //           // color="primary" BOTTONE BIANCO CON TITOLO COLORATO
-            //         />
-            //       </IonItem>
-            //       {graphView && (
-            //         <IonCardContent>
-            //           {/*<IonLabel>{(new Date()).toDateString()}</IonLabel>*/}
-            //           <Swiper
-            //             pagination={{
-            //               clickable: true,
-            //             }}
-            //             onSwiper={(swiper) => setSwiperInstance(swiper)}
-            //             onAfterInit={() =>
-            //               setTimeout(
-            //                 () => window.dispatchEvent(new Event("resize")),
-            //                 10
-            //               )
-            //             }
-            //           >
-            //             <SwiperSlide>
-            //               <BarChart data={data1} />
-            //             </SwiperSlide>
-            //             <SwiperSlide>
-            //               <BarChart data={data2} />
-            //             </SwiperSlide>
-            //             <SwiperSlide>
-            //               <BarChart data={data3} />
-            //             </SwiperSlide>
-            //           </Swiper>
-            //           <IonGrid fixed={true} class="ion-buttons-grid">
-            //             <IonRow>
-            //               <IonCol>
-            //                 <IonButton
-            //                   onClick={() => swiperInstance?.slidePrev()}
-            //                 >
-            //                   {t("prev")}
-            //                   {/*<IonIcon icon={arrowBack}/>*/}
-            //                 </IonButton>
-            //               </IonCol>
-            //               <IonCol className="ion-text-right">
-            //                 <IonButton
-            //                   onClick={() => swiperInstance?.slideNext()}
-            //                 >
-            //                   {t("next")}
-            //                 </IonButton>
-            //               </IonCol>
-            //             </IonRow>
-            //           </IonGrid>
-            //         </IonCardContent>
-            //       )}
-            //     </IonCard>
-            //   </IonCol>
-            // </IonRow>
-          }
+
+          <IonRow>
+            <IonCol>
+              <IonCard>
+                <IonItem
+                  color="primary" //TITOLO MENU COLORATO
+                  lines={graphView ? "inset" : "none"}
+                  onClick={() => setGraphView(!graphView)}
+                >
+                  <IonLabel>Crowding</IonLabel>
+                  <IonIcon
+                    slot="end"
+                    icon={graphView ? removeCircle : addCircle}
+                    // color="primary" BOTTONE BIANCO CON TITOLO COLORATO
+                  />
+                </IonItem>
+                {graphView && (
+                  <IonCardContent>
+                    <IonLabel>{(new Date()).toDateString()}</IonLabel>
+                      <BarChart data={data1} i18n={props.i18n}/>
+                    
+                    
+                  </IonCardContent>
+                )}
+              </IonCard>
+            </IonCol>
+          </IonRow>
 
           {/* SCHEDA DESCRIZIONE */}
           <IonRow>
