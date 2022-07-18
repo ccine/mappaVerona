@@ -79,11 +79,6 @@
 }
 
 .chip {
-  margin-left: 15%;
   background-color: #ffffff;
   color: black;
-}
-
-.chip-label {
-  margin-right: auto;
 }

@@ -1,4 +1,4 @@
-export const SERVER_DOMAIN = "https://sitavr.scienze.univr.it/";
+export const SERVER_DOMAIN = "https://appturismogeo.comune.verona.it/";
 export const LOG_SERVER_DOMAIN = "http://localhost:32325/";
 export const LANGUAGES = ["en", "it", "de", "fr", "es"];
 export const LOCATION_BOUNDS: [[number, number], [number, number]] = [

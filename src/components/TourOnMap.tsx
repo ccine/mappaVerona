@@ -1,10 +1,12 @@
 import {
   IonAlert,
+  IonButtons,
   IonChip,
   IonFab,
   IonFabButton,
   IonIcon,
   IonLabel,
+  IonToolbar,
 } from "@ionic/react";
 import { i18n } from "i18next";
 import { footsteps, map } from "ionicons/icons";
@@ -56,33 +58,30 @@ function TourOnMap(props: {
 
   return (
     <>
-      {/* Titolo itinerario */}
-      <IonFab vertical="top" style={{ width: "-webkit-fill-available" }}>
-        <IonChip
-          class="chip"
-          className="ion-margin-end"
-          onClick={() => {
-            setShowTourModal(true);
-          }}
-        >
-          <IonIcon icon={footsteps} color="primary" />
-          <IonLabel class="chip-label">
-            {props.tourDetails.properties[`name_${code}`] ??
-              props.tourDetails.properties.name_en}
-          </IonLabel>
-        </IonChip>
-      </IonFab>
-
-      {/* Pulsante per tornare alla mappa originale */}
-      <IonFab
-        vertical="top"
-        horizontal="end"
-        className="ion-margin-bottom"
-        onClick={() => setCloseTourAlert(true)}
-      >
-        <IonFabButton>
-          <IonIcon icon={map} />
-        </IonFabButton>
+      <IonFab vertical="top" horizontal="end" className="ion-margin-end">
+        <IonToolbar color="none" className="ion-margin-start ion-padding-start">
+          <IonButtons className="ion-margin-end">
+            {/* Titolo itinerario */}
+            <IonChip
+              class="chip"
+              onClick={() => {
+                setShowTourModal(true);
+              }}
+            >
+              <IonIcon icon={footsteps} color="primary" />
+              <IonLabel>
+                {props.tourDetails.properties[`name_${code}`] ??
+                  props.tourDetails.properties.name_en}
+              </IonLabel>
+            </IonChip>
+          </IonButtons>
+          {/* Pulsante per tornare alla mappa originale */}
+          <IonButtons slot="primary">
+            <IonFabButton onClick={() => setCloseTourAlert(true)}>
+              <IonIcon icon={map} />
+            </IonFabButton>
+          </IonButtons>
+        </IonToolbar>
       </IonFab>
 
       {/* Alert di conferma chiusura itinerario */}

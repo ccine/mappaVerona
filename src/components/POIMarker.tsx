@@ -23,11 +23,33 @@ function POIMarker(props: {
   museumsFilter: boolean;
   setTourDetails: (arg0: TourDetails) => void;
   connectionStatus: ConnectionStatus;
-  setMapCenter: (POIList: POI[]) => void
+  setMapCenter: (POIList: POI[]) => void;
 }) {
   const [showLoading, setShowLoading] = useState<boolean>(false); // Permette di mostrare il componente di caricamento
   const [showPOIModal, setShowPOIModal] = useState<boolean>(false); // Mostra la modale con i dettagli del punto di interesse
   const [presentToast] = useIonToast();
+
+  /**
+   * Vengono filtrati i POI e tolti quelli non appartenti alle tre categorie
+   */
+  var data = props.POIListData.filter((element: POI) =>
+    [
+      props.i18n.t("cat_churches", { lng: "it" }),
+      props.i18n.t("cat_monuments", { lng: "it" }),
+      props.i18n.t("cat_museums", { lng: "it" }),
+    ].includes(element.properties.category_it)
+  );
+
+  /**
+   * Se presente l'attr POIIds, vengono filtrati i POI e tolti quelli non appartenti all'array
+   */
+  if (props.POIIds !== undefined) {
+    data = data.filter((element: POI) =>
+      props.POIIds!.includes(element.properties.id_art)
+    );
+  }
+
+  props.setMapCenter(data);
 
   /**
    * Scarica i dettagli di un POI dal server
@@ -67,26 +89,6 @@ function POIMarker(props: {
         duration: 5000,
       });
     }
-  }
-
-  /**
-   * Vengono filtrati i POI e tolti quelli non appartenti alle tre categorie
-   */
-  var data = props.POIListData.filter((element: POI) =>
-    [
-      props.i18n.t("cat_churches", { lng: "it" }),
-      props.i18n.t("cat_monuments", { lng: "it" }),
-      props.i18n.t("cat_museums", { lng: "it" }),
-    ].includes(element.properties.category_it)
-  );
-
-  /**
-   * Se presente l'attr POIIds, vengono filtrati i POI e tolti quelli non appartenti all'array
-   */
-  if (props.POIIds !== undefined) {
-    data = data.filter((element: POI) =>
-      props.POIIds!.includes(element.properties.id_art)
-    );
   }
 
   /**

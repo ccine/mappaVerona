@@ -63,13 +63,14 @@ function TourModal(props: {
    * Funzione che manda in riproduzione vocale la descrizione dell'itinerario
    */
   function speak() {
+    let textPlay = document
+      .getElementById("description-text")!
+      .innerText.replaceAll("\n", " ");
     setTextPlaying(true);
     let lngPlay = getDescription() ? lng + "-" + lng.toUpperCase() : "en-US";
     if (lngPlay === "en-EN") lngPlay = "en-US";
     TextToSpeech.speak({
-      text: document
-        .getElementById("description-text")!
-        .innerText.replaceAll("\n", " "),
+      text: textPlay,
       lang: lngPlay,
     }).then(() => setTextPlaying(false));
   }
@@ -107,10 +108,12 @@ function TourModal(props: {
         button={true}
         key={id}
         lines={index < tours_id.length - 1 ? "inset" : "none"}
-        onClick={() => fetchPOIDetails(id, (poi: POIDetails) => {
-          poi_details = poi;
-          setShowPOIModal(true);
-        })}
+        onClick={() =>
+          fetchPOIDetails(id, (poi: POIDetails) => {
+            poi_details = poi;
+            setShowPOIModal(true);
+          })
+        }
       >
         <IonLabel>{index + 1 + ". " + tours_name[index]}</IonLabel>
       </IonItem>
@@ -121,7 +124,10 @@ function TourModal(props: {
   return (
     <IonModal
       isOpen={props.openCondition}
-      onDidDismiss={() => props.onDismissConditions(false)}
+      onDidDismiss={() => {
+        props.onDismissConditions(false);
+        TextToSpeech.stop();
+      }}
     >
       {/* Modal delle informazioni riguardanti il punto di interesse cliccato */}
       {showPOIModal && (

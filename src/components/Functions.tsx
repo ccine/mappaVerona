@@ -66,7 +66,7 @@ export function sendPosition(id: DeviceId, pos: Position) {
 export function fetchPOIList(callback: (arg0: POI[]) => void) {
   const artCategoryRequest =
     SERVER_DOMAIN +
-    "geoserver/tourism/ows?service=WFS&version=1.0.0" +
+    "geoserver/veronapp/ows?service=WFS&version=1.0.0" +
     "&request=GetFeature" +
     "&typeName=tourism:v_art_space" +
     "&outputFormat=json";
@@ -94,7 +94,7 @@ export function fetchPOIDetails(
 ) {
   const classIdRequest =
     SERVER_DOMAIN +
-    "geoserver/tourism/ows?service=WFS&version=1.0.0" +
+    "geoserver/veronapp/ows?service=WFS&version=1.0.0" +
     "&request=GetFeature" +
     "&typeName=tourism:v_art" +
     "&cql_filter=(classid=" +
@@ -130,7 +130,7 @@ export function fetchPOIMedia(
 ) {
   const classIdRequest =
     SERVER_DOMAIN +
-    "geoserver/tourism/ows?service=WFS&version=1.0.0" +
+    "geoserver/veronapp/ows?service=WFS&version=1.0.0" +
     "&request=GetFeature" +
     "&typeName=tourism:v_art_media" +
     "&cql_filter=(art=" +
@@ -163,7 +163,7 @@ export function fetchPOIMedia(
 export function fetchCrowding(id_poi: string, callback: (arg0: any) => void) {
   const classIdRequest =
     SERVER_DOMAIN +
-    "geoserver/tourism/ows?service=WFS&version=1.0.0" +
+    "geoserver/veronapp/ows?service=WFS&version=1.0.0" +
     "&request=GetFeature" +
     "&typeName=tourism:crowding" +
     "&cql_filter=(punto_di_interesse=" +
@@ -186,7 +186,7 @@ export function fetchCrowding(id_poi: string, callback: (arg0: any) => void) {
 export function fetchTourList(callback: (arg0: Tour[]) => void) {
   const artCategoryRequest =
     SERVER_DOMAIN +
-    "geoserver/tourism/ows?service=WFS&version=1.0.0" +
+    "geoserver/veronapp/ows?service=WFS&version=1.0.0" +
     "&request=GetFeature" +
     "&typeName=tourism:v_tour_space" +
     "&outputFormat=json";
@@ -214,7 +214,7 @@ export function fetchTourDetails(
 ) {
   const classIdRequest =
     SERVER_DOMAIN +
-    "geoserver/tourism/ows?service=WFS&version=1.0.0" +
+    "geoserver/veronapp/ows?service=WFS&version=1.0.0" +
     "&request=GetFeature" +
     "&typeName=tourism:v_tour" +
     "&cql_filter=(classid=" +
@@ -252,7 +252,8 @@ export async function sendLanguage(chooseLng: string) {
   });
 }
 
-function sendToLogServer(path: string, data: Object) {
+function sendToLogServer(path: string, data: any) {
+  data.key = md5(JSON.stringify(data)+"univrApp").toString();
   return fetch(LOG_SERVER_DOMAIN + path, {
     method: "POST",
     mode: "cors",

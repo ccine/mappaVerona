@@ -1,5 +1,6 @@
 import {
   IonButtons,
+  IonContent,
   IonFab,
   IonFabButton,
   IonHeader,
@@ -14,6 +15,7 @@ import {
   ellipsisHorizontal,
   ellipsisVertical,
   location,
+  search,
 } from "ionicons/icons";
 import "./Home.css";
 import { MapContainer } from "react-leaflet";
@@ -28,6 +30,7 @@ var isOpen = false;
 
 const Home: React.FC = () => {
   const [centerPosition, setCenterPosition] = useState<boolean>(false);
+  const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
   const fabRef = useRef<HTMLIonFabElement>(null);
   const { i18n } = useTranslation();
 
@@ -74,6 +77,14 @@ const Home: React.FC = () => {
           <IonButtons slot="end" className="ion-margin-end">
             <IonIcon
               slot="icon-only"
+              icon={search}
+              onClick={() => setShowSearchModal(true)}
+            />
+          </IonButtons>
+
+          <IonButtons slot="end" className="ion-margin-end">
+            <IonIcon
+              slot="icon-only"
               ios={ellipsisHorizontal}
               md={ellipsisVertical}
               onClick={(e) =>
@@ -85,36 +96,40 @@ const Home: React.FC = () => {
           </IonButtons>
         </IonToolbar>
       </IonHeader>
+      <IonContent>
 
-      {/* Pulsante per centrare nell propria posizione */}
-      <IonFab
-        vertical="bottom"
-        horizontal="start"
-        className="ion-margin-bottom"
-        onClick={() => {
-          setCenterPosition(true);
-        }}
-      >
-        <IonFabButton>
-          <IonIcon icon={location} />
-        </IonFabButton>
-      </IonFab>
+        {/* Pulsante per centrare nell propria posizione */}
+        <IonFab
+          vertical="bottom"
+          horizontal="start"
+          className="ion-margin-bottom"
+          onClick={() => {
+            setCenterPosition(true);
+          }}
+        >
+          <IonFabButton>
+            <IonIcon icon={location} />
+          </IonFabButton>
+        </IonFab>
 
-      <MapContainer
-        center={[45.43895, 10.99439]}
-        zoom={15}
-        minZoom={13}
-        scrollWheelZoom={true}
-        style={{ height: "100%", width: "100%" }}
-        zoomControl={true}
-      >
-        <MapChild
-          filterFabRef={fabRef}
-          centerPosition={centerPosition}
-          setCenterPosition={setCenterPosition}
-          i18n={i18n}
-        />
-      </MapContainer>
+        <MapContainer
+          center={[45.43895, 10.99439]}
+          zoom={15}
+          minZoom={13}
+          scrollWheelZoom={true}
+          style={{ height: "100%", width: "100%" }}
+          zoomControl={true}
+        >
+          <MapChild
+            filterFabRef={fabRef}
+            centerPosition={centerPosition}
+            setCenterPosition={setCenterPosition}
+            i18n={i18n}
+            showSearchModal={showSearchModal}
+            setShowSearchModal={setShowSearchModal}
+          />
+        </MapContainer>
+      </IonContent>
     </IonPage>
   );
 };

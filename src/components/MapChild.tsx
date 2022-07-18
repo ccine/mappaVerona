@@ -29,6 +29,7 @@ import { footsteps } from "ionicons/icons";
 import TourListModal from "../modals/TourListModal";
 import FilterFab from "./FilterFab";
 import TourOnMap from "./TourOnMap";
+import SearchModal from "../modals/SearchModal";
 
 var POIListData: POI[];
 const onlineBounds = L.latLngBounds(
@@ -46,6 +47,8 @@ function MapChild(props: {
   setCenterPosition: (arg0: boolean) => void;
   i18n: i18n;
   filterFabRef: React.RefObject<HTMLIonFabElement>;
+  showSearchModal: boolean;
+  setShowSearchModal: (arg0: boolean) => void;
 }) {
   const [churchersFilter, setChurchersFilter] = useState<boolean>(true); // Variabile che indica se mostrare sulla mappa le chiese
   const [monumentsFilter, setMonumentsFilter] = useState<boolean>(true); // Variabile che indica se mostrare sulla mappa i monumenti
@@ -380,6 +383,19 @@ function MapChild(props: {
           setTourDetails={setTourDetails}
           closeAllModals={() => {
             setShowTourListModal(false);
+          }}
+        />
+      )}
+
+      {props.showSearchModal && dataObtained && (
+        <SearchModal
+          openCondition={props.showSearchModal}
+          onDismissConditions={props.setShowSearchModal}
+          setTourDetails={setTourDetails}
+          i18n={props.i18n}
+          POIListData={POIListData}
+          closeAllModals={() => {
+            props.setShowSearchModal(false);
           }}
         />
       )}
