@@ -190,12 +190,12 @@ function MapChild(props: {
      */
     Network.getStatus().then((netStatus) => {
       setConnectionStatus(netStatus);
-      Storage.get({ key: "baseData" }).then((result) => {
+      Storage.get({ key: "poiList" }).then((result) => {
         if (result.value !== null) {
           POIListData = JSON.parse(result.value);
           setDataObtained(true);
           setCenterData();
-          setOnlineBounds();
+          setOfflineBounds();
         }
       });
 
@@ -252,13 +252,14 @@ function MapChild(props: {
     fetchPOIList((poiList: POI[]) => {
       POIListData = poiList;
       Storage.set({
-        key: "baseData",
+        key: "poiList",
         value: JSON.stringify(POIListData),
       });
       setDownloadedData(true);
       setDataObtained(false);
       setDataObtained(true);
       setCenterData();
+      setOnlineBounds();
     });
   }
 
@@ -267,6 +268,10 @@ function MapChild(props: {
     if (connectionStatus.connected) {
       if (tourListData === undefined) {
         fetchTourList((tourList: Tour[]) => {
+          Storage.set({
+            key: "tourList",
+            value: JSON.stringify(tourList),
+          });
           tourListData = tourList;
           setShowTourListModal(true);
         });
@@ -274,9 +279,17 @@ function MapChild(props: {
         setShowTourListModal(true);
       }
     } else {
-      presentToast({
-        message: props.i18n.t("user_offline"),
-        duration: 5000,
+      // Controlla se i tour sono presenti in cache e li mostra
+      Storage.get({ key: `tourList` }).then((result) => {
+        if (result.value !== null) {
+          tourListData = JSON.parse(result.value);
+          setShowTourListModal(true);
+        } else {
+          presentToast({
+            message: props.i18n.t("user_offline"),
+            duration: 5000,
+          });
+        }
       });
     }
   }
@@ -370,6 +383,7 @@ function MapChild(props: {
           POIListData={POIListData}
           i18n={props.i18n}
           tourDetails={tourDetails}
+          connectionStatus={connectionStatus}
           setTourDetails={setTourDetails}
         />
       )}
@@ -380,6 +394,7 @@ function MapChild(props: {
           onDismissConditions={setShowTourListModal}
           data={tourListData}
           i18n={props.i18n}
+          connectionStatus={connectionStatus}
           setTourDetails={setTourDetails}
           closeAllModals={() => {
             setShowTourListModal(false);
@@ -393,6 +408,7 @@ function MapChild(props: {
           onDismissConditions={props.setShowSearchModal}
           setTourDetails={setTourDetails}
           i18n={props.i18n}
+          connectionStatus={connectionStatus}
           POIListData={POIListData}
           closeAllModals={() => {
             props.setShowSearchModal(false);

@@ -11,6 +11,7 @@ import {
   IonSearchbar,
   IonToolbar,
   useIonPopover,
+  useIonToast
 } from "@ionic/react";
 import { useState } from "react";
 import {
@@ -28,6 +29,8 @@ import PopoverList from "../components/PopoverList";
 import { LanguageCode, POI, POIDetails, TourDetails } from "../types/app_types";
 import POIModal from "./POIModal";
 import { fetchPOIDetails } from "../components/Functions";
+import { Storage } from "@capacitor/storage";
+import { ConnectionStatus } from "@capacitor/network";
 
 var poi_details: POIDetails;
 
@@ -36,6 +39,7 @@ function SearchModal(props: {
   onDismissConditions: (arg0: boolean) => void;
   POIListData: POI[];
   i18n: i18n;
+  connectionStatus: ConnectionStatus;
   setTourDetails: (arg0: TourDetails) => void;
   closeAllModals: () => void;
 }) {
@@ -44,8 +48,8 @@ function SearchModal(props: {
     onHide: () => dismiss(),
   });
   const [searchText, setSearchText] = useState<string>(""); // Valore searchbar
-
   const lang_code: LanguageCode = props.i18n.language as LanguageCode;
+  const [presentToast] = useIonToast();
 
   /**
    * Vengono filtrati i POI e tolti quelli non appartenti alle tre categorie
@@ -81,21 +85,40 @@ function SearchModal(props: {
       : POI.properties.name_en;
   };
 
+  function openPOIModal(id_poi: string){
+    if (props.connectionStatus.connected) {
+      fetchPOIDetails(id_poi, (poi_data: POIDetails) => {
+        Storage.set({
+          key: `poi${poi_data.classid}`,
+          value: JSON.stringify(poi_data),
+        });
+        poi_details = poi_data;
+        setShowPOIModal(true);
+      });
+    } else {
+      // Controlla se i dettagli sono presenti in cache e li mostra
+      Storage.get({ key: `poi${id_poi}` }).then((result) => {
+        if (result.value !== null) {
+          poi_details = JSON.parse(result.value);
+          setShowPOIModal(true);
+        } else {
+          presentToast({
+            message: props.i18n.t("user_offline"),
+            duration: 5000,
+          });
+        }
+      });
+    }
+  }
+
   /**
    * Crea la lista di POI
    */
   const listPOI = data.map((POI: POI) => (
     <IonItem
       key={POI.properties.id_art}
-      hidden={
-        POIname(POI).toLowerCase().indexOf(searchText.toLowerCase()) < 0
-      }
-      onClick={() =>
-        fetchPOIDetails(POI.properties.id_art, (poi_data: POIDetails) => {
-          poi_details = poi_data;
-          setShowPOIModal(true);
-        })
-      }
+      hidden={POIname(POI).toLowerCase().indexOf(searchText.toLowerCase()) < 0}
+      onClick={() => openPOIModal(POI.properties.id_art)}
       button
     >
       <IonIcon
@@ -165,6 +188,7 @@ function SearchModal(props: {
             data={poi_details}
             i18n={props.i18n}
             setTourDetails={props.setTourDetails}
+            connectionStatus={props.connectionStatus}
             closeAllModals={() => {
               props.closeAllModals();
               setShowPOIModal(false);

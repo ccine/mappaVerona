@@ -19,6 +19,7 @@ import {
   IonThumbnail,
   IonToolbar,
   useIonPopover,
+  useIonToast,
 } from "@ionic/react";
 import { useState } from "react";
 import {
@@ -39,6 +40,8 @@ import ReactHtmlParser from "react-html-parser";
 import POIModal from "./POIModal";
 import { i18n } from "i18next";
 import { LanguageCode, POIDetails, TourDetails } from "../types/app_types";
+import { Storage } from "@capacitor/storage";
+import { ConnectionStatus } from "@capacitor/network";
 
 var poi_details: POIDetails;
 
@@ -47,6 +50,7 @@ function TourModal(props: {
   onDismissConditions: (arg0: boolean) => void;
   data: TourDetails;
   i18n: i18n;
+  connectionStatus: ConnectionStatus;
   setTourDetails: (arg0: TourDetails) => void;
   closeAllModals: () => void;
 }) {
@@ -56,8 +60,8 @@ function TourModal(props: {
     onHide: () => dismiss(),
   });
   const [showPOIModal, setShowPOIModal] = useState<boolean>(false); // Mostra la POIModal in cui sono presenti i dettagli di un punto di interesse
-
   const lng = props.i18n.language as LanguageCode;
+  const [presentToast] = useIonToast();
 
   /**
    * Funzione che manda in riproduzione vocale la descrizione dell'itinerario
@@ -97,25 +101,46 @@ function TourModal(props: {
     return "No description for this POI.";
   };
 
-  /** Creazione della lista di itinerari cliccabili */
+  function openPOIModal(id_poi: string) {
+    if (props.connectionStatus.connected) {
+      fetchPOIDetails(id_poi, (poi: POIDetails) => {
+        Storage.set({
+          key: `poi${poi.classid}`,
+          value: JSON.stringify(poi),
+        });
+        poi_details = poi;
+        setShowPOIModal(true);
+      });
+    } else {
+      // Controlla se i dettagli sono presenti in cache e li mostra
+      Storage.get({ key: `poi${id_poi}` }).then((result) => {
+        if (result.value !== null) {
+          poi_details = JSON.parse(result.value);
+          setShowPOIModal(true);
+        } else {
+          presentToast({
+            message: props.i18n.t("user_offline"),
+            duration: 5000,
+          });
+        }
+      });
+    }
+  }
+
+  /** Creazione della lista di POI cliccabili */
   function PoiList() {
-    const tours_id = props.data.properties.points_tour_id.split(",");
-    const tours_name = props.data.properties[`points_tour_name_${lng}`]
+    const pois_id = props.data.properties.points_tour_id.split(",");
+    const pois_name = props.data.properties[`points_tour_name_${lng}`]
       ? props.data.properties[`points_tour_name_${lng}`].split(",")
       : props.data.properties.points_tour_name_en.split(",");
-    const listItems = tours_id.map((id: string, index: number) => (
+    const listItems = pois_id.map((id: string, index: number) => (
       <IonItem
         button={true}
         key={id}
-        lines={index < tours_id.length - 1 ? "inset" : "none"}
-        onClick={() =>
-          fetchPOIDetails(id, (poi: POIDetails) => {
-            poi_details = poi;
-            setShowPOIModal(true);
-          })
-        }
+        lines={index < pois_id.length - 1 ? "inset" : "none"}
+        onClick={() => openPOIModal(id)}
       >
-        <IonLabel>{index + 1 + ". " + tours_name[index]}</IonLabel>
+        <IonLabel>{index + 1 + ". " + pois_name[index]}</IonLabel>
       </IonItem>
     ));
     return <IonList className="ion-no-padding">{listItems}</IonList>;
@@ -136,6 +161,7 @@ function TourModal(props: {
           onDismissConditions={setShowPOIModal}
           data={poi_details}
           i18n={props.i18n}
+          connectionStatus={props.connectionStatus}
           setTourDetails={props.setTourDetails}
           closeAllModals={() => {
             props.closeAllModals();

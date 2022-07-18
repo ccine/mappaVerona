@@ -14,11 +14,13 @@ import { Polyline } from "react-leaflet";
 import { useState } from "react";
 import { TourDetails, POI, LanguageCode } from "../types/app_types";
 import TourModal from "../modals/TourModal";
+import { ConnectionStatus } from "@capacitor/network";
 
 function TourOnMap(props: {
   i18n: i18n;
   tourDetails: TourDetails;
   setTourDetails: (arg0: TourDetails | undefined) => void;
+  connectionStatus: ConnectionStatus;
   POIListData: POI[];
 }) {
   const [closeTourAlert, setCloseTourAlert] = useState<boolean>(false); // Indica se mostrare l'alert di conferma chiusura del tour
@@ -115,6 +117,7 @@ function TourOnMap(props: {
           onDismissConditions={setShowTourModal}
           data={props.tourDetails}
           i18n={props.i18n}
+          connectionStatus={props.connectionStatus}
           setTourDetails={props.setTourDetails}
           closeAllModals={() => {
             setShowTourModal(false);

@@ -22,6 +22,7 @@ import {
   IonThumbnail,
   IonNote,
   IonList,
+  useIonToast,
 } from "@ionic/react";
 import {
   addCircle,
@@ -45,6 +46,8 @@ import logoVerona from "../assets/images/logo_stemma.png";
 import TourModal from "./TourModal";
 import { i18n } from "i18next";
 import { LanguageCode, POIDetails, TourDetails } from "../types/app_types";
+import { Storage } from "@capacitor/storage";
+import { ConnectionStatus } from "@capacitor/network";
 
 var tour_details: TourDetails;
 
@@ -54,6 +57,7 @@ function POIModal(props: {
   onDismissConditions: (arg0: boolean) => void;
   data: POIDetails;
   i18n: i18n;
+  connectionStatus: ConnectionStatus;
   setTourDetails: (arg0: TourDetails) => void;
   closeAllModals: () => void;
 }) {
@@ -63,6 +67,7 @@ function POIModal(props: {
   const [urlMedia, setUrlMedia] = useState<string>(); // Imposta la URL da dove caricare il video del POI se è presente
   const [textPlaying, setTextPlaying] = useState<boolean>(false); // Controlla se il TTS è in riproduzione o no
   const [showTourModal, setShowTourModal] = useState<boolean>(false); // Mostra o nascondi il modale dell'itinerario
+  const [presentToast] = useIonToast();
 
   /**
    * Conta il numero di itinerari in cui il punto di interesse è presente
@@ -76,7 +81,11 @@ function POIModal(props: {
 
   // DATI DI PROVA
 
-  var data = [{var_real: 85, val_stim: 80, val_stor: 89}, {var_real: 0, val_stim: 20, val_stor: 35}, {var_real: 0, val_stim: 60, val_stor: 65}];
+  var data = [
+    { var_real: 85, val_stim: 80, val_stor: 89 },
+    { var_real: 0, val_stim: 20, val_stor: 35 },
+    { var_real: 0, val_stim: 60, val_stor: 65 },
+  ];
 
   const data1 = {
     labels: [
@@ -103,7 +112,7 @@ function POIModal(props: {
     ],
   };
 
-  function BarChart(props: { data: any, i18n: i18n; }) {
+  function BarChart(props: { data: any; i18n: i18n }) {
     return (
       <Bar
         data={props.data}
@@ -215,10 +224,29 @@ function POIModal(props: {
    * @param id_tour Identificativo del tour
    */
   function getTourDetail(id_tour: string) {
-    fetchTourDetails(id_tour, (tour: TourDetails) => {
-      tour_details = tour;
-      setShowTourModal(true);
-    });
+    if (props.connectionStatus.connected) {
+      fetchTourDetails(id_tour, (tour: TourDetails) => {
+        Storage.set({
+          key: `tour${tour.properties.classid}`,
+          value: JSON.stringify(tour),
+        });
+        tour_details = tour;
+        setShowTourModal(true);
+      });
+    } else {
+      // Controlla se i dettagli sono presenti in cache e li mostra
+      Storage.get({ key: `tour${id_tour}` }).then((result) => {
+        if (result.value !== null) {
+          tour_details = JSON.parse(result.value);
+          setShowTourModal(true);
+        } else {
+          presentToast({
+            message: props.i18n.t("user_offline"),
+            duration: 5000,
+          });
+        }
+      });
+    }
   }
 
   /** Creazione della lista di itinerari cliccabili */
@@ -265,6 +293,7 @@ function POIModal(props: {
           onDismissConditions={setShowTourModal}
           data={tour_details}
           i18n={props.i18n}
+          connectionStatus={props.connectionStatus}
           setTourDetails={props.setTourDetails}
           closeAllModals={() => {
             props.closeAllModals();
@@ -316,11 +345,13 @@ function POIModal(props: {
       <IonContent>
         <IonGrid fixed={true}>
           {/* IMMAGINE */}
-          <IonRow className="ion-align-items-center">
-            <IonCol>
-              <IonImg src={props.data.image_url} />
-            </IonCol>
-          </IonRow>
+          {props.data.image_url && (
+            <IonRow className="ion-align-items-center">
+              <IonCol>
+                <IonImg src={props.data.image_url} />
+              </IonCol>
+            </IonRow>
+          )}
 
           {/* SCHEDA ORARI */}
           <IonRow>
@@ -439,8 +470,8 @@ function POIModal(props: {
                 </IonItem>
                 {graphView && (
                   <IonCardContent>
-                    <IonLabel>{(new Date()).toDateString()}</IonLabel>
-                      <BarChart data={data1} i18n={props.i18n}/>
+                    <IonLabel>{new Date().toDateString()}</IonLabel>
+                    <BarChart data={data1} i18n={props.i18n} />
                   </IonCardContent>
                 )}
               </IonCard>

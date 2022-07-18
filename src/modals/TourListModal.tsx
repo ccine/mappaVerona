@@ -16,6 +16,7 @@ import {
   IonTitle,
   IonToolbar,
   useIonPopover,
+  useIonToast,
 } from "@ionic/react";
 import { useState } from "react";
 import {
@@ -30,6 +31,8 @@ import { i18n } from "i18next";
 import { LanguageCode, Tour, TourDetails } from "../types/app_types";
 import PopoverList from "../components/PopoverList";
 import { fetchTourDetails } from "../components/Functions";
+import { Storage } from "@capacitor/storage";
+import { ConnectionStatus } from "@capacitor/network";
 
 var tour_details: TourDetails;
 
@@ -38,6 +41,7 @@ function TourListModal(props: {
   onDismissConditions: (arg0: boolean) => void;
   data: Tour[];
   i18n: i18n;
+  connectionStatus: ConnectionStatus;
   setTourDetails: (arg0: TourDetails) => void;
   closeAllModals: () => void;
 }) {
@@ -46,6 +50,7 @@ function TourListModal(props: {
     onHide: () => dismiss(),
   });
   const lng = props.i18n.language as LanguageCode;
+  const [presentToast] = useIonToast();
 
   function getTourNameFallback(tour: Tour): string {
     const name = tour.properties[`name_${lng}`];
@@ -54,10 +59,31 @@ function TourListModal(props: {
 
   /** Richiedi al server i dettagli di un itinerario */
   function getTourDetail(id_tour: string) {
-    fetchTourDetails(id_tour, (tour: TourDetails) => {
-      tour_details = tour;
-      setShowTourModal(true);
-    });
+      if (props.connectionStatus.connected) {
+        fetchTourDetails(id_tour, (tour: TourDetails) => {
+          Storage.set({
+            key: `tour${tour.properties.classid}`,
+            value: JSON.stringify(tour),
+          });
+          tour_details = tour;
+          setShowTourModal(true);
+        });
+      } else {
+        // Controlla se i dettagli sono presenti in cache e li mostra
+        Storage.get({ key: `tour${id_tour}` }).then((result) => {
+          if (result.value !== null) {
+            tour_details = JSON.parse(result.value);
+            setShowTourModal(true);
+          } else {
+            presentToast({
+              message: props.i18n.t("user_offline"),
+              duration: 5000,
+            });
+          }
+        });
+      }
+    
+    
   }
 
   /** Creazione delle sezioni delle categorie dei poi*/
@@ -92,6 +118,7 @@ function TourListModal(props: {
           onDismissConditions={setShowTourModal}
           data={tour_details}
           i18n={props.i18n}
+          connectionStatus={props.connectionStatus}
           setTourDetails={props.setTourDetails}
           closeAllModals={() => {
             props.closeAllModals();

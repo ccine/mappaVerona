@@ -10,6 +10,7 @@ import { useState } from "react";
 import POIModal from "../modals/POIModal";
 import { ConnectionStatus } from "@capacitor/network";
 import { fetchPOIDetails } from "./Functions";
+import { Storage } from "@capacitor/storage";
 
 var POIDetailsData: POIDetails;
 var isLoading: boolean = false;
@@ -52,7 +53,7 @@ function POIMarker(props: {
   props.setMapCenter(data);
 
   /**
-   * Scarica i dettagli di un POI dal server
+   * Scarica i dettagli di un POI dal server quando viene aperto il popup
    * @param id Identificatore del punto di interesse
    */
   function getPOIDetails(id: string) {
@@ -62,6 +63,10 @@ function POIMarker(props: {
         POIDetailsData === undefined)
     ) {
       fetchPOIDetails(id, (poi: POIDetails) => {
+        Storage.set({
+          key: `poi${poi.classid}`,
+          value: JSON.stringify(poi),
+        });
         POIDetailsData = poi;
         if (isLoading) {
           setShowPOIModal(true);
@@ -71,7 +76,7 @@ function POIMarker(props: {
   }
 
   /**
-   * Funzione che apre la modale di dettaglio del POI selezionato
+   * Funzione che apre la modale di dettaglio del POI selezionato cliccando sul bottone dettagli
    * @param id Identificatore del punto di cui si vogliono i dettagli
    */
   function openModal(id: string) {
@@ -84,9 +89,18 @@ function POIMarker(props: {
         isLoading = true;
       }
     } else {
-      presentToast({
-        message: props.i18n.t("user_offline"),
-        duration: 5000,
+      // Controlla se i dettagli sono presenti in cache e li mostra
+      Storage.get({ key: `poi${id}` }).then((result) => {
+        if (result.value !== null) {
+          POIDetailsData = JSON.parse(result.value);
+          setShowPOIModal(true);
+          isLoading = false;
+        } else {
+          presentToast({
+            message: props.i18n.t("user_offline"),
+            duration: 5000,
+          });
+        }
       });
     }
   }
@@ -191,6 +205,7 @@ function POIMarker(props: {
           onDismissConditions={setShowPOIModal}
           data={POIDetailsData}
           i18n={props.i18n}
+          connectionStatus={props.connectionStatus}
           setTourDetails={props.setTourDetails}
           closeAllModals={() => {
             setShowPOIModal(false);
