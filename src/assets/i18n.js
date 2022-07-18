@@ -34,8 +34,15 @@ i18n.use(initReactI18next).init({
         day_week_fri: "Venerdì",
         day_week_sat: "Sabato",
         day_week_sun: "Domenica",
+        crowding: "Affollamento",
         xlabel: "Orari",
-        ylabel: "Affollamento",
+        ylabel: "#Persone",
+        firstRange: "Mattino",
+        secondRange: "Mezzogiorno",
+        thirdRange: "Pomeriggio",
+        val_real: "reali",
+        val_stim: "attesi",
+        val_stor: "storici",
         prev: "Precedente",
         next: "Successivo",
         not_supported: "Questo contenuto non è disponibile nella tua lingua.",
@@ -85,8 +92,15 @@ i18n.use(initReactI18next).init({
         day_week_fri: "Friday",
         day_week_sat: "Saturday",
         day_week_sun: "Sunday",
+        crowding: "Crowding",
         xlabel: "Time",
-        ylabel: "Crowding",
+        ylabel: "#People",
+        firstRange: "Morning",
+        secondRange: "Noon",
+        thirdRange: "Afternoon",
+        val_real: "real",
+        val_stim: "expected",
+        val_stor: "historical",
         prev: "Previous",
         next: "Next",
         not_supported: "This content is not available in your language.",
@@ -136,8 +150,15 @@ i18n.use(initReactI18next).init({
         day_week_fri: "Friday", // en
         day_week_sat: "Saturday", // en
         day_week_sun: "Sunday", // en
+        crowding: "Crowding", // en
         xlabel: "Time", // en
-        ylabel: "Crowding", // en
+        ylabel: "#People", // en
+        firstRange: "Morning",  // en
+        secondRange: "Noon",  // en
+        thirdRange: "Afternoon",  // en
+        val_real: "real", // en
+        val_stim: "expected", // en
+        val_stor: "historical", // en
         prev: "Previous", // en
         next: "Next", // en
         not_supported: "This content is not available in your language.", // en
@@ -187,8 +208,15 @@ i18n.use(initReactI18next).init({
         day_week_fri: "Friday", // en
         day_week_sat: "Saturday", // en
         day_week_sun: "Sunday", // en
+        crowding: "Crowding", // en
         xlabel: "Time", // en
-        ylabel: "Crowding", // en
+        ylabel: "#People", // en
+        firstRange: "Morning",  // en
+        secondRange: "Noon",  // en
+        thirdRange: "Afternoon",  // en
+        val_real: "real", // en
+        val_stim: "expected", // en
+        val_stor: "historical", // en
         prev: "Previous", // en
         next: "Next", // en
         not_supported: "This content is not available in your language.", // en
@@ -238,8 +266,15 @@ i18n.use(initReactI18next).init({
         day_week_fri: "Friday", // en
         day_week_sat: "Saturday", // en
         day_week_sun: "Sunday", // en
+        crowding: "Crowding", // en
         xlabel: "Time", // en
-        ylabel: "Crowding", // en
+        ylabel: "#People", // en
+        firstRange: "Morning",  // en
+        secondRange: "Noon",  // en
+        thirdRange: "Afternoon",  // en
+        val_real: "real", // en
+        val_stim: "expected", // en
+        val_stor: "historical", // en
         prev: "Previous", // en
         next: "Next", // en
         not_supported: "This content is not available in your language.", // en

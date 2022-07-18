@@ -35,7 +35,6 @@ import {
 } from "ionicons/icons";
 import ReactHtmlParser from "react-html-parser";
 import { fetchPOIMedia, fetchTourDetails } from "../components/Functions";
-import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Navigation, Pagination } from "swiper";
 import { TextToSpeech } from "@capacitor-community/text-to-speech";
 import ReactPlayer from "react-player/file";
@@ -73,72 +72,33 @@ function POIModal(props: {
     : 0;
 
   const [graphView, setGraphView] = useState<boolean>(false); // Mostra o nascondi il grafico della popolazione nel POI
-  const [swiperInstance, setSwiperInstance] = useState<SwiperCore>(); //
   SwiperCore.use([IonicSwiper, Navigation, Pagination]);
 
   // DATI DI PROVA
 
+  var data = [{var_real: 85, val_stim: 80, val_stor: 89}, {var_real: 0, val_stim: 20, val_stor: 35}, {var_real: 0, val_stim: 60, val_stor: 65}];
+
   const data1 = {
     labels: [
-      "Morning",
-      "Noon",
-      "Afternoon",
-      /*t("day_week_mon"),
-       t("day_week_tue"),
-       t("day_week_tue"),
-       t("day_week_thu"),
-       t("day_week_fri"),
-       t("day_week_sat"),
-       t("day_week_sun"),
-       */
+      props.i18n.t("firstRange"),
+      props.i18n.t("secondRange"),
+      props.i18n.t("thirdRange"),
     ],
     datasets: [
       {
-        label: "historical",
-        data: [89, 35, 65],
+        label: props.i18n.t("val_stor"),
+        data: [data[0].val_stor, data[1].val_stor, data[2].val_stor],
         backgroundColor: "rgb(255, 99, 132)",
       },
       {
-        label: "expected",
-        data: [80, 20, 60],
+        label: props.i18n.t("val_stim"),
+        data: [data[0].val_stim, data[1].val_stim, data[2].val_stim],
         backgroundColor: "rgb(75, 192, 192)",
       },
       {
-        label: "real",
-        data: [85, 0, 0],
+        label: props.i18n.t("val_real"),
+        data: [data[0].var_real, data[1].var_real, data[2].var_real],
         backgroundColor: "rgb(54, 162, 235)",
-      },
-    ],
-  };
-
-  const data2 = {
-    labels: ["12-14", "14-16", "16-18"],
-    datasets: [
-      {
-        label: props.i18n.t("historical"),
-        data: [3, 5, 13],
-        backgroundColor: "rgb(255, 99, 132)",
-      },
-      {
-        label: props.i18n.t("expected"),
-        data: [13, 15, 15],
-        backgroundColor: "rgb(75, 192, 192)",
-      },
-    ],
-  };
-
-  const data3 = {
-    labels: ["18-20", "20-22", "22-24"],
-    datasets: [
-      {
-        label: props.i18n.t("historical"),
-        data: [2, 3, 18],
-        backgroundColor: "rgb(255, 99, 132)",
-      },
-      {
-        label: props.i18n.t("expected"),
-        data: [12, 13, 25],
-        backgroundColor: "rgb(75, 192, 192)",
       },
     ],
   };
@@ -168,7 +128,7 @@ function POIModal(props: {
               display: true,
               title: {
                 display: true,
-                text: "# People",
+                text: props.i18n.t("ylabel"),
                 font: {
                   weight: "bold",
                   size: 14,
@@ -470,7 +430,7 @@ function POIModal(props: {
                   lines={graphView ? "inset" : "none"}
                   onClick={() => setGraphView(!graphView)}
                 >
-                  <IonLabel>Crowding</IonLabel>
+                  <IonLabel>{props.i18n.t("crowding")}</IonLabel>
                   <IonIcon
                     slot="end"
                     icon={graphView ? removeCircle : addCircle}
@@ -481,8 +441,6 @@ function POIModal(props: {
                   <IonCardContent>
                     <IonLabel>{(new Date()).toDateString()}</IonLabel>
                       <BarChart data={data1} i18n={props.i18n}/>
-                    
-                    
                   </IonCardContent>
                 )}
               </IonCard>
