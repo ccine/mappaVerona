@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Bar } from "react-chartjs-2";
 import {
   IonButton,
@@ -15,7 +15,6 @@ import {
   IonRow,
   IonText,
   IonToolbar,
-  IonicSwiper,
   IonHeader,
   useIonPopover,
   IonButtons,
@@ -35,8 +34,11 @@ import {
   volumeMute,
 } from "ionicons/icons";
 import ReactHtmlParser from "react-html-parser";
-import { fetchPOIMedia, fetchTourDetails } from "../components/Functions";
-import SwiperCore, { Navigation, Pagination } from "swiper";
+import {
+  fetchCrowding,
+  fetchPOIMedia,
+  fetchTourDetails,
+} from "../components/Functions";
 import { TextToSpeech } from "@capacitor-community/text-to-speech";
 import ReactPlayer from "react-player/file";
 import "swiper/swiper-bundle.min.css";
@@ -67,6 +69,7 @@ function POIModal(props: {
   const [urlMedia, setUrlMedia] = useState<string>(); // Imposta la URL da dove caricare il video del POI se è presente
   const [textPlaying, setTextPlaying] = useState<boolean>(false); // Controlla se il TTS è in riproduzione o no
   const [showTourModal, setShowTourModal] = useState<boolean>(false); // Mostra o nascondi il modale dell'itinerario
+  const [dataCrowding, setDataCrowding] = useState<String>(); // Dati affollamento
   const [presentToast] = useIonToast();
 
   /**
@@ -77,7 +80,6 @@ function POIModal(props: {
     : 0;
 
   const [graphView, setGraphView] = useState<boolean>(false); // Mostra o nascondi il grafico della popolazione nel POI
-  SwiperCore.use([IonicSwiper, Navigation, Pagination]);
 
   // DATI DI PROVA
 
@@ -285,6 +287,9 @@ function POIModal(props: {
         fetchPOIMedia(props.data.classid, (path: string) => {
           setUrlMedia(path);
         });
+        fetchCrowding(props.data.classid, (res: string) => {
+          setDataCrowding(res);
+        });
       }}
     >
       {showTourModal && (
@@ -452,31 +457,32 @@ function POIModal(props: {
           )}
 
           {/* SCHEDA OCCUPAZIONE */}
-
-          <IonRow>
-            <IonCol>
-              <IonCard>
-                <IonItem
-                  color="primary" //TITOLO MENU COLORATO
-                  lines={graphView ? "inset" : "none"}
-                  onClick={() => setGraphView(!graphView)}
-                >
-                  <IonLabel>{props.i18n.t("crowding")}</IonLabel>
-                  <IonIcon
-                    slot="end"
-                    icon={graphView ? removeCircle : addCircle}
-                    // color="primary" BOTTONE BIANCO CON TITOLO COLORATO
-                  />
-                </IonItem>
-                {graphView && (
-                  <IonCardContent>
-                    <IonLabel>{new Date().toDateString()}</IonLabel>
-                    <BarChart data={data1} i18n={props.i18n} />
-                  </IonCardContent>
-                )}
-              </IonCard>
-            </IonCol>
-          </IonRow>
+          {dataCrowding && (
+            <IonRow>
+              <IonCol>
+                <IonCard>
+                  <IonItem
+                    color="primary" //TITOLO MENU COLORATO
+                    lines={graphView ? "inset" : "none"}
+                    onClick={() => setGraphView(!graphView)}
+                  >
+                    <IonLabel>{props.i18n.t("crowding")}</IonLabel>
+                    <IonIcon
+                      slot="end"
+                      icon={graphView ? removeCircle : addCircle}
+                      // color="primary" BOTTONE BIANCO CON TITOLO COLORATO
+                    />
+                  </IonItem>
+                  {graphView && (
+                    <IonCardContent>
+                      <IonLabel>{new Date().toDateString()}</IonLabel>
+                      <BarChart data={data1} i18n={props.i18n} />
+                    </IonCardContent>
+                  )}
+                </IonCard>
+              </IonCol>
+            </IonRow>
+          )}
 
           {/* SCHEDA DESCRIZIONE */}
           <IonRow>

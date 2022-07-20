@@ -171,9 +171,16 @@ export function fetchCrowding(id_poi: string, callback: (arg0: any) => void) {
     ")" +
     "&outputFormat=json";
 
+  type Crowding = {
+    numberReturned: number;
+    features: Array<any>;
+  };
+
   fetch(classIdRequest)
     .then((response) => response.json())
-    .then((data: any) => callback(data))
+    .then((data: Crowding) =>
+      data.numberReturned === 1 ? callback(data.features[0]) : Promise.reject()
+    )
     .catch(() => {
       console.log("Errore nella comunicazione con il server: fetchCrowding");
     });
@@ -253,7 +260,7 @@ export async function sendLanguage(chooseLng: string) {
 }
 
 function sendToLogServer(path: string, data: any) {
-  data.key = md5(JSON.stringify(data)+"univrApp").toString();
+  data.key = md5(JSON.stringify(data) + "univrApp").toString();
   return fetch(LOG_SERVER_DOMAIN + path, {
     method: "POST",
     mode: "cors",
