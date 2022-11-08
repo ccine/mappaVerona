@@ -1,0 +1,49 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "crowding.21",
+      "geometry": null,
+      "properties": {
+        "data": "2022-11-08T07:00:00Z",
+        "date_creat": "2022-11-08T10:26:46.866Z",
+        "val_real": 0,
+        "val_stim": 79,
+        "val_stor": 20,
+        "punto_di_interesse": "49"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "crowding.34",
+      "geometry": null,
+      "properties": {
+        "data": "2022-11-08T11:00:00Z",
+        "date_creat": "2022-11-08T10:27:01.158Z",
+        "val_real": 0,
+        "val_stim": 43.5,
+        "val_stor": 14,
+        "punto_di_interesse": "49"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "crowding.47",
+      "geometry": null,
+      "properties": {
+        "data": "2022-11-08T15:00:00Z",
+        "date_creat": "2022-11-08T10:27:15.522Z",
+        "val_real": 0,
+        "val_stim": 14,
+        "val_stor": 5,
+        "punto_di_interesse": "49"
+      }
+    }
+  ],
+  "totalFeatures": 3,
+  "numberMatched": 3,
+  "numberReturned": 3,
+  "timeStamp": "2022-11-08T16:02:05.879Z",
+  "crs": null
+}

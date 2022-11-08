@@ -2,7 +2,7 @@ import { Device, DeviceId } from "@capacitor/device";
 import { Position } from "@capacitor/geolocation";
 import L from "leaflet";
 import { LOG_SERVER_DOMAIN, SERVER_DOMAIN } from "../configVar";
-import { POI, POIDetails, Tour, TourDetails } from "../types/app_types";
+import { Crowding, POI, POIDetails, Tour, TourDetails } from "../types/app_types";
 import md5 from "crypto-js/md5";
 
 // Trova il centro rispetto a tutti i punti di interesse
@@ -171,15 +171,15 @@ export function fetchCrowding(id_poi: string, callback: (arg0: any) => void) {
     ")" +
     "&outputFormat=json";
 
-  type Crowding = {
+  type CrowdingResponse = {
     numberReturned: number;
-    features: Array<any>;
+    features: { properties: Crowding }[];
   };
 
   fetch(classIdRequest)
     .then((response) => response.json())
-    .then((data: Crowding) =>
-      data.numberReturned === 1 ? callback(data.features[0]) : Promise.reject()
+    .then((data: CrowdingResponse) =>
+      data.numberReturned === 0 ? Promise.reject() : callback(data.features)
     )
     .catch(() => {
       console.log("Errore nella comunicazione con il server: fetchCrowding");

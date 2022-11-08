@@ -107,3 +107,12 @@ export interface Tour {
     name_es: string;
   };
 }
+
+export interface Crowding {
+  data: string
+  date_creat: string
+  val_real: number
+  val_stim: number
+  val_stor: number
+  punto_di_interesse: string
+}

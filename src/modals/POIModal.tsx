@@ -81,37 +81,43 @@ function POIModal(props: {
 
   const [graphView, setGraphView] = useState<boolean>(false); // Mostra o nascondi il grafico della popolazione nel POI
 
-  // DATI DI PROVA
-
-  var data = [
-    { var_real: 85, val_stim: 80, val_stor: 89 },
-    { var_real: 0, val_stim: 20, val_stor: 35 },
-    { var_real: 0, val_stim: 60, val_stor: 65 },
-  ];
-
-  const data1 = {
-    labels: [
-      props.i18n.t("firstRange"),
-      props.i18n.t("secondRange"),
-      props.i18n.t("thirdRange"),
-    ],
-    datasets: [
-      {
-        label: props.i18n.t("val_stor"),
-        data: [data[0].val_stor, data[1].val_stor, data[2].val_stor],
-        backgroundColor: "rgb(255, 99, 132)",
-      },
-      {
-        label: props.i18n.t("val_stim"),
-        data: [data[0].val_stim, data[1].val_stim, data[2].val_stim],
-        backgroundColor: "rgb(75, 192, 192)",
-      },
-      {
-        label: props.i18n.t("val_real"),
-        data: [data[0].var_real, data[1].var_real, data[2].var_real],
-        backgroundColor: "rgb(54, 162, 235)",
-      },
-    ],
+  const graphCrowdingData = (data: any) => {
+    return {
+      labels: [
+        props.i18n.t("firstRange"),
+        props.i18n.t("secondRange"),
+        props.i18n.t("thirdRange"),
+      ],
+      datasets: [
+        {
+          label: props.i18n.t("val_stor"),
+          data: [
+            data[0].properties.val_stor,
+            data[1].properties.val_stor,
+            data[2].properties.val_stor,
+          ],
+          backgroundColor: "rgb(255, 99, 132)",
+        },
+        {
+          label: props.i18n.t("val_stim"),
+          data: [
+            data[0].properties.val_stim,
+            data[1].properties.val_stim,
+            data[2].properties.val_stim,
+          ],
+          backgroundColor: "rgb(75, 192, 192)",
+        },
+        {
+          label: props.i18n.t("val_real"),
+          data: [
+            data[0].properties.var_real,
+            data[1].properties.var_real,
+            data[2].properties.var_real,
+          ],
+          backgroundColor: "rgb(54, 162, 235)",
+        },
+      ],
+    };
   };
 
   function BarChart(props: { data: any; i18n: i18n }) {
@@ -145,7 +151,6 @@ function POIModal(props: {
                   size: 14,
                 },
               },
-              max: 100,
               min: 0,
             },
           },
@@ -476,7 +481,10 @@ function POIModal(props: {
                   {graphView && (
                     <IonCardContent>
                       <IonLabel>{new Date().toDateString()}</IonLabel>
-                      <BarChart data={data1} i18n={props.i18n} />
+                      <BarChart
+                        data={graphCrowdingData(dataCrowding)}
+                        i18n={props.i18n}
+                      />
                     </IonCardContent>
                   )}
                 </IonCard>
